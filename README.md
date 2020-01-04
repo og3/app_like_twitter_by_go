@@ -44,7 +44,7 @@ func dbInit() {
 ```
 この処理でDB作成をしてくれるのは初回のみの模様。。どっかに読み先情報をキャッシュしてるとか？
 
-- インサート処理
+- post
 ```
 // DB追加
 func dbInsert(content string) {
@@ -57,7 +57,7 @@ func dbInsert(content string) {
   defer db.Close()
 }
 ```
-- 全件取得
+- all
 ```
 // 全件取得
 func dbGetAll() []Tweet {
@@ -70,6 +70,52 @@ func dbGetAll() []Tweet {
   db.Order("created_at desc").Find(&tweets)
   defer db.Close()
   return tweets
+}
+```
+- find
+```
+//DB一つ取得
+func dbGetOne(id int) Todo {
+  db, err := gorm.Open("mysql", "root:@tcp(127.0.0.1:3306)/todo_app_by_go?parseTime=true")
+  if err != nil {
+      panic("データベース開けず！(dbGetOne())")
+  }
+  var todo Todo
+  db.First(&todo, id)
+  db.Close()
+  return todo
+}
+```
+- update
+```
+//DB更新
+func dbUpdate(id int, text string, status string) {
+  db, err := gorm.Open("mysql", "root:@tcp(127.0.0.1:3306)/todo_app_by_go?parseTime=true")
+  if err != nil {
+      panic("データベース開けず！（dbUpdate)")
+  }
+  var todo Todo
+  db.First(&todo, id)
+  todo.Text = text
+  todo.Status = status
+  db.Save(&todo)
+  db.Close()
+}
+```
+- delete
+```
+//DB削除
+func dbDelete(id int) {
+  db, err := gorm.Open("mysql", "root:@tcp(127.0.0.1:3306)/todo_app_by_go?parseTime=true")
+  if err != nil {
+      panic("データベース開けず！（dbDelete)")
+  }
+  var todo Todo
+  // 削除対象の読み込み
+  db.First(&todo, id)
+  // 削除
+  db.Delete(&todo)
+  db.Close()
 }
 ```
 
